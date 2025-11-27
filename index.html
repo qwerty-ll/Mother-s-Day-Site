@@ -16,6 +16,7 @@
             --blur: blur(15px);
         }
 
+        /* --- БАЗОВЫЕ СТИЛИ --- */
         body {
             margin: 0;
             padding: 0;
@@ -26,6 +27,7 @@
             position: relative;
         }
 
+        /* --- ФОН (Оставляем без изменений) --- */
         .background-blobs {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -50,6 +52,7 @@
             100% { transform: translate(30px, 50px) scale(1.1); }
         }
 
+        /* --- ЗАГОЛОВОК (СТИЛИ ДЛЯ ДЕСКТОПА) --- */
         header {
             text-align: center;
             padding: 100px 20px 60px;
@@ -74,6 +77,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* --- ГАЛЕРЕЯ (СТИЛИ ДЛЯ ДЕСКТОПА) --- */
         .gallery {
             max-width: 1200px;
             margin: 0 auto;
@@ -82,9 +86,7 @@
             column-gap: 40px;
         }
 
-        @media (max-width: 900px) { .gallery { column-count: 2; column-gap: 20px; } }
-        @media (max-width: 600px) { .gallery { column-count: 1; } }
-
+        /* --- КАРТОЧКА (СТИЛИ ДЛЯ ДЕСКТОПА) --- */
         .card {
             background: var(--card-bg);
             backdrop-filter: var(--blur);
@@ -149,6 +151,82 @@
             padding: 60px 20px;
             font-size: 1rem;
             color: #a89f9c;
+        }
+
+        /* ===================================== */
+        /* --- МЕДИА-ЗАПРОСЫ ДЛЯ АДАПТАЦИИ --- */
+        /* ===================================== */
+
+        /* 1. ПЛАНШЕТЫ И СРЕДНИЕ УСТРОЙСТВА (ширина до 900px) */
+        @media (max-width: 900px) {
+            /* Переключаем на 2 колонки */
+            .gallery { 
+                column-count: 2; 
+                column-gap: 20px;
+            }
+            
+            /* Уменьшаем размер заголовка */
+            h1 { 
+                font-size: 4rem; 
+            }
+        }
+
+        /* 2. ТЕЛЕФОНЫ (ширина до 600px) */
+        @media (max-width: 600px) {
+            /* Переключаем на 1 колонку, чтобы карточки были крупные и удобные */
+            .gallery { 
+                column-count: 1;
+                padding: 15px; /* Уменьшаем общий паддинг */
+            }
+
+            /* Уменьшаем вертикальные отступы для компактности */
+            .card {
+                margin-bottom: 30px;
+            }
+            
+            /* Уменьшаем заголовки и отступы в шапке */
+            header {
+                padding: 60px 15px 40px;
+            }
+
+            h1 { 
+                font-size: 3rem; /* Комфортный размер для мобильных */
+            }
+
+            p.intro {
+                font-size: 1.2rem;
+            }
+
+            /* Уменьшаем внутренние паддинги карточки */
+            .text-content {
+                padding: 20px 15px;
+            }
+
+            .wish {
+                font-size: 1.2rem; /* Чуть меньше размер текста поздравления */
+            }
+            
+            .photo-frame {
+                padding: 10px 10px 0 10px;
+            }
+        }
+        
+        /* 3. ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (ширина до 400px) */
+        @media (max-width: 400px) {
+             h1 {
+                font-size: 2.5rem; /* Чтобы точно помещался */
+            }
+            
+            /* Уменьшаем размер размытых пятен, чтобы не перегружали экран */
+            .blob {
+                width: 200px;
+                height: 200px;
+                filter: blur(40px);
+            }
+            
+            p.intro {
+                font-size: 1rem;
+            }
         }
 
     </style>
@@ -223,21 +301,27 @@
                 <span class="decoration">✨</span>
             </div>
         </div>
-
-    </div>
+        
+        </div>
 
     <footer>
         <p>С любовью и бесконечной благодарностью</p>
     </footer>
 
     <script>
+        // Скрипт для плавного появления карточек при скролле
         document.addEventListener("DOMContentLoaded", function() {
             const cards = document.querySelectorAll('.card');
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
+                        // Устанавливаем задержку для каждой карточки, чтобы они появлялись "лесенкой"
+                        const delay = Array.from(cards).indexOf(entry.target) * 100;
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, delay);
+                        observer.unobserve(entry.target); // Прекращаем наблюдение после появления
                     }
                 });
             }, {
